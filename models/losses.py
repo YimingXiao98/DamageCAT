@@ -6,7 +6,9 @@ from torch import nn
 import numpy as np
 from torch.autograd import Variable
 from typing import Optional
-def cross_entropy(input, target, weight=None, reduction='mean',ignore_index=255):
+
+
+def cross_entropy(input, target, weight=None, reduction="mean", ignore_index=255):
     """
     logSoftmax_with_loss
     :param input: torch.Tensor, N*C*H*W
@@ -17,13 +19,20 @@ def cross_entropy(input, target, weight=None, reduction='mean',ignore_index=255)
     target = target.long()
     if target.dim() == 4:
         target = torch.squeeze(target, dim=1)
-    #print("pred: ", input.shape, "target: ", target.shape)
+    # print("pred: ", input.shape, "target: ", target.shape)
     if input.shape[-1] != target.shape[-1]:
-        input = F.interpolate(input, size=target.shape[1:], mode='bilinear',align_corners=True)
+        input = F.interpolate(
+            input, size=target.shape[1:], mode="bilinear", align_corners=True
+        )
 
     weight_ = torch.Tensor([1, 1]).cuda()
-    return F.cross_entropy(input=input, target=target, weight=weight_,
-                           ignore_index=ignore_index, reduction=reduction)
+    return F.cross_entropy(
+        input=input,
+        target=target,
+        weight=weight_,
+        ignore_index=ignore_index,
+        reduction=reduction,
+    )
 
 
 # def focal_loss(pred, true):
@@ -39,20 +48,20 @@ def cross_entropy(input, target, weight=None, reduction='mean',ignore_index=255)
 
 #     return loss
 
+
 def one_hot(index, classes):
     size = index.size() + (classes,)
     view = index.size() + (1,)
 
     mask = torch.Tensor(*size).fill_(0)
     index = index.view(*view)
-    ones = 1.
+    ones = 1.0
 
     if isinstance(index, Variable):
         ones = Variable(torch.Tensor(index.size()).fill_(1)).cuda()
         mask = Variable(mask, volatile=index.volatile).cuda()
 
     return mask.scatter_(1, index, ones)
-
 
 
 def one_hot(
@@ -93,22 +102,30 @@ def one_hot(
     if not labels.dtype == torch.int64:
         labels = labels.to(torch.int64)
         if not labels.dtype == torch.int64:
-            raise ValueError(f"labels must be of the same dtype torch.int64. Got: {labels.dtype}")
+            raise ValueError(
+                f"labels must be of the same dtype torch.int64. Got: {labels.dtype}"
+            )
 
     if num_classes < 1:
-        raise ValueError("The number of classes must be bigger than one." " Got: {}".format(num_classes))
+        raise ValueError(
+            "The number of classes must be bigger than one."
+            " Got: {}".format(num_classes)
+        )
 
     shape = labels.shape
-    one_hot = torch.zeros((shape[0], num_classes) + shape[1:], device=device, dtype=dtype)
+    one_hot = torch.zeros(
+        (shape[0], num_classes) + shape[1:], device=device, dtype=dtype
+    )
 
     return one_hot.scatter_(1, labels.unsqueeze(1), 1.0) + eps
-    
+
+
 def focal_loss(
     input: torch.Tensor,
     target: torch.Tensor,
     alpha=0.5,
     gamma: float = 2.0,
-    reduction: str = 'mean',
+    reduction: str = "mean",
     eps: Optional[float] = None,
 ) -> torch.Tensor:
     r"""Criterion that computes Focal loss.
@@ -162,38 +179,45 @@ def focal_loss(
         raise ValueError(f"Invalid input shape, we expect BxCx*. Got: {input.shape}")
 
     if input.size(0) != target.size(0):
-        raise ValueError(f'Expected input batch_size ({input.size(0)}) to match target batch_size ({target.size(0)}).')
+        raise ValueError(
+            f"Expected input batch_size ({input.size(0)}) to match target batch_size ({target.size(0)})."
+        )
 
     n = input.size(0)
     out_size = (n,) + input.size()[2:]
     if target.size()[1:] != input.size()[2:]:
-        raise ValueError(f'Expected target size {out_size}, got {target.size()}')
+        raise ValueError(f"Expected target size {out_size}, got {target.size()}")
 
     if not input.device == target.device:
-        raise ValueError(f"input and target must be in the same device. Got: {input.device} and {target.device}")
+        raise ValueError(
+            f"input and target must be in the same device. Got: {input.device} and {target.device}"
+        )
 
     # compute softmax over the classes axis
     input_soft: torch.Tensor = F.softmax(input, dim=1)
     log_input_soft: torch.Tensor = F.log_softmax(input, dim=1)
 
     # create the labels one hot tensor
-    target_one_hot: torch.Tensor = one_hot(target, num_classes=input.shape[1], device=input.device, dtype=input.dtype)
+    target_one_hot: torch.Tensor = one_hot(
+        target, num_classes=input.shape[1], device=input.device, dtype=input.dtype
+    )
 
     # compute the actual focal loss
     weight = torch.pow(-input_soft + 1.0, gamma)
 
     focal = -alpha * weight * log_input_soft
-    loss_tmp = torch.einsum('bc...,bc...->b...', (target_one_hot, focal))
+    loss_tmp = torch.einsum("bc...,bc...->b...", (target_one_hot, focal))
 
-    if reduction == 'none':
+    if reduction == "none":
         loss = loss_tmp
-    elif reduction == 'mean':
+    elif reduction == "mean":
         loss = torch.mean(loss_tmp)
-    elif reduction == 'sum':
+    elif reduction == "sum":
         loss = torch.sum(loss_tmp)
     else:
         raise NotImplementedError(f"Invalid reduction mode: {reduction}")
     return loss
+
 
 # class FocalLoss(nn.Module):
 
@@ -243,11 +267,11 @@ def focal_loss(
 def focal_loss_xBD(pred, true):
     B, C, H, W = pred.shape
     true = true.squeeze()
-    msk0 = torch.zeros([B,H,W]).cuda()
-    msk1 = torch.zeros([B,H,W]).cuda()
-    msk2 = torch.zeros([B,H,W]).cuda()
-    msk3 = torch.zeros([B,H,W]).cuda()
-    msk4 = torch.zeros([B,H,W]).cuda()
+    msk0 = torch.zeros([B, H, W]).cuda()
+    msk1 = torch.zeros([B, H, W]).cuda()
+    msk2 = torch.zeros([B, H, W]).cuda()
+    msk3 = torch.zeros([B, H, W]).cuda()
+    msk4 = torch.zeros([B, H, W]).cuda()
 
     msk0[true == 0] = 1
     msk1[true == 1] = 1
@@ -255,17 +279,17 @@ def focal_loss_xBD(pred, true):
     msk3[true == 3] = 1
     msk4[true == 4] = 1
 
-    loss0 = focal_loss2D(pred[:,0,:,:], msk0)
-    loss1 = focal_loss2D(pred[:,1,:,:], msk1)
-    loss2 = focal_loss2D(pred[:,2,:,:], msk2)
-    loss3 = focal_loss2D(pred[:,3,:,:], msk3)
-    loss4 = focal_loss2D(pred[:,4,:,:], msk4)
+    loss0 = focal_loss2D(pred[:, 0, :, :], msk0)
+    loss1 = focal_loss2D(pred[:, 1, :, :], msk1)
+    loss2 = focal_loss2D(pred[:, 2, :, :], msk2)
+    loss3 = focal_loss2D(pred[:, 3, :, :], msk3)
+    loss4 = focal_loss2D(pred[:, 4, :, :], msk4)
 
     return loss0 * 0.01 + loss1 * 0.1 + loss2 * 2 + loss3 * 1.5 + loss4 * 2
-    
+
     # too much oscillating
     # return loss0 * 0.1 + loss1 * 1 + loss2 * 5 + loss3 * 5 + loss4 * 10
-    
+
     # return loss0 * 1 + loss1 * 100
 
 
@@ -274,13 +298,13 @@ def focal_loss2D(outputs, targets, gamma=2, ignore_index=255):
     targets = targets.contiguous()
 
     eps = 1e-8
-    outputs = torch.clamp(outputs, 1e-8, 1. - 1e-8)
-    targets = torch.clamp(targets, 1e-8, 1. - 1e-8)
+    outputs = torch.clamp(outputs, 1e-8, 1.0 - 1e-8)
+    targets = torch.clamp(targets, 1e-8, 1.0 - 1e-8)
     pt = (1 - targets) * (1 - outputs) + targets * outputs
-    return (-(1. - pt) ** gamma * torch.log(pt)).mean()
+    return (-((1.0 - pt) ** gamma) * torch.log(pt)).mean()
 
 
-def multi_cross_entropy(input, target, weight=None, reduction='mean',ignore_index=255):
+def multi_cross_entropy(input, target, weight=None, reduction="mean", ignore_index=255):
     """
     logSoftmax_with_loss
     :param input: torch.Tensor, N*C*H*W
@@ -292,17 +316,23 @@ def multi_cross_entropy(input, target, weight=None, reduction='mean',ignore_inde
     if target.dim() == 4:
         target = torch.squeeze(target, dim=1)
     if input.shape[-1] != target.shape[-1]:
-        input = F.interpolate(input, size=target.shape[1:], mode='bilinear',align_corners=True)
+        input = F.interpolate(
+            input, size=target.shape[1:], mode="bilinear", align_corners=True
+        )
 
     weight_ = torch.Tensor([1, 5, 100, 90, 100]).cuda()
     # print("pred: ", input.shape, "target: ", target.shape)
- 
-    return F.cross_entropy(input=input, target=target, weight=weight_,
-                           ignore_index=ignore_index, reduction=reduction)
+
+    return F.cross_entropy(
+        input=input,
+        target=target,
+        weight=weight_,
+        ignore_index=ignore_index,
+        reduction=reduction,
+    )
 
 
-
-def ce_dice(input, target, weight=None, ignore_index=255, reduction='mean'):
+def ce_dice(input, target, weight=None, ignore_index=255, reduction="mean"):
     """
     logSoftmax_with_loss
     :param input: torch.Tensor, N*C*H*W
@@ -310,30 +340,35 @@ def ce_dice(input, target, weight=None, ignore_index=255, reduction='mean'):
     :param weight: torch.Tensor, C
     :return: torch.Tensor [0]
     """
-    #target = target.long()
+    # target = target.long()
     if target.dim() == 4:
         target = torch.squeeze(target, dim=1)
     if input.shape[-1] != target.shape[-1]:
-        input = F.interpolate(input, size=target.shape[1:], mode='bilinear',align_corners=True)
-    
+        input = F.interpolate(
+            input, size=target.shape[1:], mode="bilinear", align_corners=True
+        )
+
     weight_ = torch.Tensor([0.2, 0.8]).cuda()
-    ce  = torch.nn.CrossEntropyLoss(weight=weight,
-                           ignore_index=ignore_index, reduction=reduction)
-    celoss = ce(input,target)    
-    dice = smp_losses.DiceLoss(mode='binary')
+    ce = torch.nn.CrossEntropyLoss(
+        weight=weight, ignore_index=ignore_index, reduction=reduction
+    )
+    celoss = ce(input, target)
+    dice = smp_losses.DiceLoss(mode="binary")
     input = torch.argmax(input, dim=1).type(torch.float32)
     target = target.type(torch.float32)
     diceloss = dice(input, target)
 
-    loss = 0.5*diceloss + 0.5*celoss
+    loss = 0.5 * diceloss + 0.5 * celoss
 
     return loss
 
 
 def diceloss(input, target, weight=None):
-    input = torch.argmax(input, dim=1).type(torch.float32)
+    """input = torch.argmax(input, dim=1).type(torch.float32)
     target = target.type(torch.float32)
 
     diceloss = smp_losses.DiceLoss(mode='binary')
     loss = diceloss(input, target)
-    return loss
+    return loss"""
+    diceloss_fn = smp_losses.DiceLoss(mode="multiclass", from_logits=True)
+    return diceloss_fn(input, target)

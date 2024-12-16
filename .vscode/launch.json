@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug main_cd.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main_cd.py",  // Update the path if `main_cd.py` is not in the root
+            "console": "integratedTerminal",
+            "args": [
+                "--img_size", "512",
+                "--checkpoint_root", "checkpoints",
+                "--lr_policy", "linear",
+                "--split", "train",
+                "--split_val", "val",
+                "--net_G", "newUNetTrans",
+                "--gpu_ids", "0",
+                "--max_epochs", "200",
+                "--project_name", "CROP_newUNetTrans_xBDataset_b2_lr0.001_train_val_200_linear_ce_smoothen",
+                "--batch_size", "2",
+                "--data_name", "xBDataset",
+                "--lr", "0.001",
+                "--dataset", "xBDataset",
+                "--loss", "ce",
+                "--n_class", "5"
+            ]
+        },
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
