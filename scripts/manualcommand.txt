@@ -1,0 +1,1 @@
+python ../main_cd.py --img_size 512 --checkpoint_root checkpoints --lr_policy linear --split train --split_val val --net_G newUNetTrans --gpu_ids 0 --max_epochs 200 --project_name CROP_newUNetTrans_xBDataset_b2_lr0.001_train_val_200_linear_ce_smoothen --batch_size 2 --data_name xBDataset  --lr 0.001 --dataset xBDataset --loss ce --n_class 4
