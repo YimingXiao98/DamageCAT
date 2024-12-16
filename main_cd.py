@@ -15,24 +15,6 @@ the main function for training the CD networks
 
 def train(args):
     dataloaders = utils.get_loaders(args)
-    """for batch in dataloaders["train"]:
-        print("Batch Keys:", batch.keys())  # Confirm all keys
-
-        # Inspect file names
-        print("File Names (First 2):", batch["name"][:2])  # Print first 2 file names
-
-        # Inspect tensor shapes
-        print("A Shape:", batch["A"].shape)  # Shape of 'A'
-        print("B Shape:", batch["B"].shape)  # Shape of 'B'
-        print("L Shape:", batch["L"].shape)  # Shape of 'L'
-
-        # Check data ranges (optional)
-        print("A Min/Max:", batch["A"].min(), batch["A"].max())
-        print("B Min/Max:", batch["B"].min(), batch["B"].max())
-        print("L Unique Values:", batch["L"].unique())  # For label/mask verification
-
-        break  # Exit after the first batch"""
-
     model = CDTrainer(args=args, dataloaders=dataloaders)
     model.train_models()
 

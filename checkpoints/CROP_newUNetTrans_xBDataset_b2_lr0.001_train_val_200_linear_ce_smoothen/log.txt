@@ -113,3 +113,4 @@ Lastest model updated. Epoch_acc=0.3693, Historical_best_acc=0.3642 (at epoch 1)
 **********Best model updated!
 
 lr: 0.0009851
+Is_training: True. [3,199][1,946], imps: 12.10, est: 17.12h, G_loss: 0.16940, running_mf1: 0.27401

@@ -273,11 +273,11 @@ class xBDatasetMulti(data.Dataset):
         self.label_transform = label_transform
         self.split = split
 
-        train_dirs = ["data/xbd/train"]  # fix path!!
+        train_dirs = [os.path.abspath("data/xbd/train")]  # fix path!!
         all_files = []
         for d in train_dirs:
             for f in sorted(os.listdir(os.path.join(d, "images"))):
-                if ("pre.png" in f) and (
+                if ("pre" in f) and (
                     ("hurricane-harvey" in f)
                     | ("hurricane-michael" in f)
                     | ("mexico-earthquake" in f)

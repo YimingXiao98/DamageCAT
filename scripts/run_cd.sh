@@ -2,15 +2,15 @@
 
 gpus=-1
 checkpoint_root=checkpoints 
-data_name=LEVIR
-dataset=CDDataset
+data_name=xBDataset
+dataset=xBDatasetMulti
 loss=ce
-n_class=2
+n_class=5
 lr=0.001
 lr_policy=linear
 
-img_size=256
-batch_size=2
+img_size=512
+batch_size=8
 
 max_epochs=200 
 net_G=newUNetTrans
