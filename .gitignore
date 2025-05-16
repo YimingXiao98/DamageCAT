@@ -63,3 +63,10 @@ data/Backup/
 # Archive and reference code
 Archive/
 xBD_code/
+
+# Data files
+data/damagecat/train/images/*
+data/damagecat/train/masks/*
+data/damagecat/test/images/*
+data/damagecat/test/masks/*
+!data/damagecat/test/.gitkeep
