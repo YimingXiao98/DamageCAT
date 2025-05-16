@@ -38,23 +38,22 @@ data/damagecat/
 ├── train/
 │ ├── images/
 │ │ ├── pre_0.png
-│ │ └── pre_1.png
-│ │ └── pre_2.png
-│ │ └── pre_3.png
+│ │ ├── pre_1.png
+│ │ ├── pre_2.png
+│ │ ├── pre_3.png
 │ │ └── ...
 │ └── masks/
 │ │ ├── pre_0.png
-│ │ └── pre_1.png
-│ │ └── pre_2.png
-│ │ └── pre_3.png
+│ │ ├── pre_1.png
+│ │ ├── pre_2.png
+│ │ ├── pre_3.png
 │ │ └── ...
 └── test/
-│ ├── images/
-│ │ ├── pre_0.png
-│ │ └── pre_1.png
-│ │ └── pre_2.png
-│ │ └── pre_3.png
-│ │ └── ...
+   ├── pre_0.png
+   ├── pre_1.png
+   ├── pre_2.png
+   ├── pre_3.png
+   └── ...
 ```
 
 ## Usage
@@ -78,11 +77,17 @@ Key parameters in the training script:
 
 ### Evaluation
 
-To evaluate the model and make predictions, use the script in `scripts/eval.sh`:
+To evaluate the model and make predictions, make sure you have the pre-trained model in the `checkpoints/your_project_name` folder, have the test images in the `data/damagecat/test/` folder, and the use the script in `scripts/eval.sh`:
 
 ```bash
 bash scripts/eval.sh
 ```
+
+Key parameters in the evaluation script:
+
+- `dataset`: Dataset name (default: DamageCAT)
+- `data_name`: Data name (default: x)
+- `batch_size`: Batch size (default: 8)
 
 ## Model Architecture
 

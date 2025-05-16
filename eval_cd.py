@@ -26,7 +26,7 @@ def main():
 
     # data
     parser.add_argument("--num_workers", default=4, type=int)
-    parser.add_argument("--dataset", default="xBDataset", type=str)
+    parser.add_argument("--dataset", default="DamageCAT", type=str)
     parser.add_argument("--data_name", default="x", type=str)
 
     parser.add_argument("--batch_size", default=8, type=int)
