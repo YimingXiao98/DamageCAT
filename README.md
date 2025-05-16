@@ -77,6 +77,8 @@ Key parameters in the training script:
 
 ### Evaluation
 
+The pre-trained models are available at: [Pre-trained model](https://drive.google.com/file/d/1v6kVhOMu-6IfjLEXBOfmOn2eK9UEAt7U/view?usp=sharing)
+
 To evaluate the model and make predictions, make sure you have the pre-trained model in the `checkpoints/your_project_name` folder, have the test images in the `data/damagecat/test/` folder, and the use the script in `scripts/eval.sh`:
 
 ```bash
@@ -97,9 +99,9 @@ The framework uses a transformer-based architecture (newUNetTrans) that combines
 - Transformer encoder-decoder
 - Multi-scale feature fusion
 
-## Pre-trained Models
+## BD-TypoSAT
 
-[Link to pre-trained models will be added]
+The data set used in this work is available at: [BD-TypoSAT](https://drive.google.com/file/d/1iGsJFyn-KURWgSGbaNOEAhinDluoyFlc/view?usp=sharing)
 
 ## Citation
 
