@@ -69,4 +69,5 @@ data/damagecat/train/images/*
 data/damagecat/train/masks/*
 data/damagecat/test/images/*
 data/damagecat/test/masks/*
-!data/damagecat/test/.gitkeep
+!data/damagecat/test/
+!data/damagecat/test/
