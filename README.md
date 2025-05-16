@@ -49,13 +49,12 @@ data/damagecat/
 │ │ └── pre_3.png
 │ │ └── ...
 └── test/
-├── images/
-│ ├── pre_0.png
-│ └── pre_1.png
-│ └── pre_2.png
-│ └── pre_3.png
-│ └── ...
-
+│ ├── images/
+│ │ ├── pre_0.png
+│ │ └── pre_1.png
+│ │ └── pre_2.png
+│ │ └── pre_3.png
+│ │ └── ...
 ```
 
 ## Usage
