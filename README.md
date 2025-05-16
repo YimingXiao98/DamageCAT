@@ -26,7 +26,7 @@ DamageCAT is a deep learning framework for building damage assessment that:
 You can install the required packages using:
 
 ```bash
-pip install torch torchvision numpy opencv-python Pillow scikit-learn matplotlib einops tifffile
+pip install -r requirements.txt
 ```
 
 ## Data Preparation
@@ -55,12 +55,7 @@ data/damagecat/
 │ └── pre_2.png
 │ └── pre_3.png
 │ └── ...
-└── masks/
-│ ├── pre_0.png
-│ └── pre_1.png
-│ └── pre_2.png
-│ └── pre_3.png
-│ └── ...
+
 ```
 
 ## Usage
