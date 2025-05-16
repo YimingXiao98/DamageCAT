@@ -348,7 +348,14 @@ def ce_dice(input, target, weight=None, ignore_index=255, reduction="mean"):
             input, size=target.shape[1:], mode="bilinear", align_corners=True
         )
 
-    weight_ = torch.Tensor([0.2, 0.8]).cuda()
+    weight = torch.Tensor(
+        [
+            1.07,
+            2.91,
+            9.9,
+            14.61,
+        ]
+    ).cuda()
     ce = torch.nn.CrossEntropyLoss(
         weight=weight, ignore_index=ignore_index, reduction=reduction
     )

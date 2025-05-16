@@ -1,7 +1,3 @@
-"""
-变化检测数据集
-"""
-
 import os
 from PIL import Image
 import numpy as np
@@ -13,7 +9,7 @@ from datasets.data_utils import CDDataAugmentation
 from sklearn.model_selection import train_test_split
 
 """
-CD data set with pixel-level labels；
+CD data set with pixel-level labels;
 ├─image
 ├─image_post
 ├─label
@@ -26,7 +22,7 @@ ANNOT_FOLDER_NAME = "targets"
 
 IGNORE = 255
 
-label_suffix = ".png"  # jpg for gan dataset, others : png
+label_suffix = ".png"  # jpg for gan dataset, others: png
 
 
 def load_img_name_list(dataset_path):
@@ -153,7 +149,6 @@ class CDDataset(ImageDataset):
         )
         label = np.array(Image.open(L_path), dtype=np.uint8)
 
-        #  二分类中，前景标注为255
         if self.label_transform == "norm":
             label = label // 255
 
@@ -199,7 +194,7 @@ class xBDataset(data.Dataset):
         self.label_transform = label_transform
         self.split = split
 
-        train_dirs = [os.path.abspath("data/xbd/train")]  # fix path!!
+        train_dirs = [os.path.abspath("data/xbd/train")]
         print(f"Train dir: {train_dirs}")
         all_files = []
         for d in train_dirs:
@@ -242,7 +237,7 @@ class xBDataset(data.Dataset):
         return len(self.img_name_list)
 
 
-class xBDatasetMulti(data.Dataset):
+class DamageCATDataset(data.Dataset):
     def __init__(
         self,
         root_dir,
@@ -252,7 +247,7 @@ class xBDatasetMulti(data.Dataset):
         label_transform=None,
         to_tensor=True,
     ):
-        super(xBDatasetMulti, self).__init__()
+        super(DamageCATDataset, self).__init__()
 
         self.root_dir = root_dir
         self.img_size = img_size
@@ -273,17 +268,18 @@ class xBDatasetMulti(data.Dataset):
         self.label_transform = label_transform
         self.split = split
 
-        train_dirs = [os.path.abspath("data/xbd/train")]  # fix path!!
+        train_dirs = [os.path.abspath("data/damagecat/train")]
         all_files = []
         for d in train_dirs:
             for f in sorted(os.listdir(os.path.join(d, "images"))):
-                if ("pre" in f) and (
+                """and (
                     ("hurricane-harvey" in f)
                     | ("hurricane-michael" in f)
                     | ("mexico-earthquake" in f)
                     | ("tuscaloosa-tornado" in f)
                     | ("palu-tsunami" in f)
-                ):
+                )"""
+                if "pre" in f:
                     all_files.append(os.path.join(d, "images", f))
 
         # Upsampling
@@ -302,7 +298,7 @@ class xBDatasetMulti(data.Dataset):
             im = all_files[i]
             if file_classes[i, 1:].max():
                 all_files.append(im)
-            if file_classes[i, 1:3].max():
+            if file_classes[i, 2:4].max():
                 all_files.append(im)
 
         # train test split
@@ -322,18 +318,13 @@ class xBDatasetMulti(data.Dataset):
         img = cv2.imread(fn, cv2.IMREAD_COLOR)
         img_B = cv2.imread(fn.replace("pre", "post"), cv2.IMREAD_COLOR)
         label = cv2.imread(
-            fn.replace("images/", "masks").replace("pre", "post"),
+            fn.replace("images", "masks").replace("pre", "post"),
             cv2.IMREAD_UNCHANGED,
         )
 
-        if self.split == "train":
-            [img, img_B], [label] = self.augm.transform(
-                [img, img_B], [label], to_tensor=self.to_tensor, is_train=True
-            )
-        else:
-            [img, img_B], [label] = self.augm.transform(
-                [img, img_B], [label], to_tensor=self.to_tensor, is_train=False
-            )
+        [img, img_B], [label] = self.augm.transform(
+            [img, img_B], [label], to_tensor=self.to_tensor
+        )
 
         name = fn.split("/")[-1]
         return {"name": fn, "A": img, "B": img_B, "L": label}

@@ -4,6 +4,7 @@ import numpy as np
 ###################       metrics      ###################
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.initialized = False
         self.val = None
@@ -47,6 +48,7 @@ class AverageMeter(object):
 ###################      cm metrics      ###################
 class ConfuseMatrixMeter(AverageMeter):
     """Computes and stores the average and current value"""
+
     def __init__(self, n_class):
         super(ConfuseMatrixMeter, self).__init__()
         self.n_class = n_class
@@ -63,9 +65,8 @@ class ConfuseMatrixMeter(AverageMeter):
         return scores_dict
 
 
-
 def harmonic_mean(xs):
-    harmonic_mean = len(xs) / sum((x+1e-6)**-1 for x in xs)
+    harmonic_mean = len(xs) / sum((x + 1e-6) ** -1 for x in xs)
     return harmonic_mean
 
 
@@ -112,7 +113,7 @@ def cm2score(confusion_matrix):
     precision = tp / (sum_a0 + np.finfo(np.float32).eps)
 
     # F1 score
-    F1 = 2*recall * precision / (recall + precision + np.finfo(np.float32).eps)
+    F1 = 2 * recall * precision / (recall + precision + np.finfo(np.float32).eps)
     mean_F1 = np.nanmean(F1)
     # ---------------------------------------------------------------------- #
     # 2. Frequency weighted Accuracy & Mean IoU
@@ -124,13 +125,15 @@ def cm2score(confusion_matrix):
     fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
 
     #
-    cls_iou = dict(zip(['iou_'+str(i) for i in range(n_class)], iu))
+    cls_iou = dict(zip(["iou_" + str(i) for i in range(n_class)], iu))
 
-    cls_precision = dict(zip(['precision_'+str(i) for i in range(n_class)], precision))
-    cls_recall = dict(zip(['recall_'+str(i) for i in range(n_class)], recall))
-    cls_F1 = dict(zip(['F1_'+str(i) for i in range(n_class)], F1))
+    cls_precision = dict(
+        zip(["precision_" + str(i) for i in range(n_class)], precision)
+    )
+    cls_recall = dict(zip(["recall_" + str(i) for i in range(n_class)], recall))
+    cls_F1 = dict(zip(["F1_" + str(i) for i in range(n_class)], F1))
 
-    score_dict = {'acc': acc, 'miou': mean_iu, 'mf1':mean_F1}
+    score_dict = {"acc": acc, "miou": mean_iu, "mf1": mean_F1}
     score_dict.update(cls_iou)
     score_dict.update(cls_F1)
     score_dict.update(cls_precision)
@@ -140,6 +143,7 @@ def cm2score(confusion_matrix):
 
 def get_confuse_matrix(num_classes, label_gts, label_preds):
     """计算一组预测的混淆矩阵"""
+
     def __fast_hist(label_gt, label_pred):
         """
         Collect values for Confusion Matrix
@@ -149,9 +153,12 @@ def get_confuse_matrix(num_classes, label_gts, label_preds):
         :return: <np.ndarray> values for confusion matrix
         """
         mask = (label_gt >= 0) & (label_gt < num_classes)
-        hist = np.bincount(num_classes * label_gt[mask].astype(int) + label_pred[mask],
-                           minlength=num_classes**2).reshape(num_classes, num_classes)
+        hist = np.bincount(
+            num_classes * label_gt[mask].astype(int) + label_pred[mask],
+            minlength=num_classes**2,
+        ).reshape(num_classes, num_classes)
         return hist
+
     confusion_matrix = np.zeros((num_classes, num_classes))
     for lt, lp in zip(label_gts, label_preds):
         confusion_matrix += __fast_hist(lt.flatten(), lp.flatten())
@@ -161,4 +168,4 @@ def get_confuse_matrix(num_classes, label_gts, label_preds):
 def get_mIoU(num_classes, label_gts, label_preds):
     confusion_matrix = get_confuse_matrix(num_classes, label_gts, label_preds)
     score_dict = cm2score(confusion_matrix)
-    return score_dict['miou']
+    return score_dict["miou"]

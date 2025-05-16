@@ -4,16 +4,17 @@ from torch.utils.data import DataLoader
 from torchvision import utils
 
 import data_config
-from datasets.CD_dataset import CDDataset, xBDataset, xBDatasetMulti
+from datasets.CD_dataset import CDDataset, xBDataset, DamageCATDataset
 
 
+# Loader for testing
 def get_loader(
     data_name,
     img_size=256,
     batch_size=8,
     split="test",
     is_train=False,
-    dataset="CDDataset",
+    dataset="DamageCATDataset",
     patch=None,
 ):
     dataConfig = data_config.DataConfig().get_data_config(data_name)
@@ -38,8 +39,8 @@ def get_loader(
             is_train=is_train,
             label_transform=label_transform,
         )
-    elif dataset == "xBDatasetMulti":
-        data_set = xBDatasetMulti(
+    elif dataset == "DamageCATDataset":
+        data_set = DamageCATDataset(
             root_dir=root_dir,
             split=split,
             img_size=img_size,
@@ -99,15 +100,15 @@ def get_loaders(args):
             is_train=False,
             label_transform=label_transform,
         )
-    elif args.dataset == "xBDatasetMulti":
-        training_set = xBDatasetMulti(
+    elif args.dataset == "DamageCATDataset":
+        training_set = DamageCATDataset(
             root_dir=root_dir,
             split=split,
             img_size=args.img_size,
             is_train=True,
             label_transform=label_transform,
         )
-        val_set = xBDatasetMulti(
+        val_set = DamageCATDataset(
             root_dir=root_dir,
             split=split_val,
             img_size=args.img_size,
@@ -141,23 +142,6 @@ def get_loaders(args):
         )
         for x in ["train", "val"]
     }
-    """for batch in dataloaders["train"]:
-        print("Batch Keys:", batch.keys())  # Confirm all keys
-
-        # Inspect file names
-        print("File Names (First 2):", batch["name"][:2])  # Print first 2 file names
-
-        # Inspect tensor shapes
-        print("A Shape:", batch["A"].shape)  # Shape of 'A'
-        print("B Shape:", batch["B"].shape)  # Shape of 'B'
-        print("L Shape:", batch["L"].shape)  # Shape of 'L'
-
-        # Check data ranges (optional)
-        print("A Min/Max:", batch["A"].min(), batch["A"].max())
-        print("B Min/Max:", batch["B"].min(), batch["B"].max())
-        print("L Unique Values:", batch["L"].unique())  # For label/mask verification
-
-        break  # Exit after the first batch"""
     return dataloaders
 
 

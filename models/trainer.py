@@ -44,9 +44,6 @@ class CDTrainer:
             self.net_G.parameters(), lr=self.lr, betas=(0.9, 0.999), weight_decay=0.01
         )
 
-        # self.optimizer_G = optim.SGD(self.net_G.parameters(), lr=self.lr,
-        #                              momentum=0.9,
-        #                              weight_decay=5e-4)
 
         # define lr schedulers
         self.exp_lr_scheduler_G = get_scheduler(self.optimizer_G, args)
@@ -291,45 +288,16 @@ class CDTrainer:
 
     def _backward_G(self):
         gt = self.batch["L"].to(self.device).long()
-        # gt = gt.squeeze(1)  # Now gt should be (2, 512, 512)
-        """print("Unique labels in gt:", gt.unique())
-        print(f"Unique labels in G_pred: {self.G_pred.unique()}")"""
         self._pxl_loss1 = losses.diceloss
         self._pxl_loss2 = losses.focal_loss
-        # if gt.shape[0] != 1:
         if gt.shape[0] != 1:
-            # print(f"gt shape: {gt.shape}, G_pred shape: {self.G_pred.shape}")
             self.G_loss = self._pxl_loss1(self.G_pred, gt) + self._pxl_loss2(
                 self.G_pred, gt
             )
         else:
             self.G_loss = losses.cross_entropy(self.G_pred, gt)
 
-        # print("G_loss:", self.G_loss)
         self.G_loss.backward()
-
-    # def _forward_pass(self, batch):
-    #     self.batch = batch
-    #     img_in1 = batch['A'].to(self.device)
-    #     img_in2 = batch['B'].to(self.device)
-    #     self.G_pred = self.net_G(img_in1, img_in2)
-    #     self.G_final_pred = self.G_pred[-1]
-
-    # def _backward_G(self):
-    #     gt = self.batch['L'].to(self.device).float()
-    #     i         = 0
-    #     temp_loss = 0.0
-    #     self.weights = [0.5, 0.5, 0.5, 0.8, 1.0]
-    #     for pred in self.G_pred:
-    #         if pred.size(2) != gt.size(2):
-    #             temp_loss_ = self.weights[i]*self._pxl_loss(pred, F.interpolate(gt, size=(pred.shape[-1],pred.shape[-1]), mode="nearest"))
-    #             if temp_loss_ != 0:
-    #                 temp_loss = temp_loss + self.weights[i]*self._pxl_loss(pred, F.interpolate(gt, size=(pred.shape[-1],pred.shape[-1]), mode="nearest"))
-    #         else:
-    #             temp_loss = temp_loss + self.weights[i]*self._pxl_loss(pred, gt)
-    #         i+=1
-    #     self.G_loss = temp_loss
-    #     self.G_loss.backward()
 
     def train_models(self):
 

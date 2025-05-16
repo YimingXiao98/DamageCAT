@@ -20,11 +20,28 @@
                 "--gpu_ids", "0",
                 "--max_epochs", "200",
                 "--project_name", "CROP_newUNetTrans_xBDataset_b2_lr0.001_train_val_200_linear_ce_smoothen",
-                "--batch_size", "2",
+                "--batch_size", "8",
                 "--data_name", "xBDataset",
                 "--lr", "0.001",
-                "--dataset", "xBDataset",
+                "--dataset", "xBDatasetMulti",
                 "--loss", "ce",
+                "--n_class", "5"
+            ]
+        },
+        {
+            "name": "Python: Debug eval_cd.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/eval_cd.py",  // Update the path if `main_cd.py` is not in the root
+            "console": "integratedTerminal",
+            "args": [
+                "--img_size", "512",
+                "--checkpoint_name", "best_ckpt.pt",
+                "--split", "test",
+                "--net_G", "newUNetTrans",
+                "--gpu_ids", "0",
+                "--project_name", "CROP_newUNetTrans_xBDataset_b4_lr0.001_train_val_20_linear_ce_smoothen",
+                "--data_name", "xBDataset",
                 "--n_class", "5"
             ]
         },

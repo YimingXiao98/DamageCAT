@@ -1348,7 +1348,7 @@ class BASE_Transformer_UNet(ResNet_UNet):
             if_upsample_2x=if_upsample_2x,
         )
 
-        print("using UNet Transformer !!!!")
+        print("using UNet Transformer")
 
         self.token_len = token_len
         self.tokenizer = tokenizer

@@ -1,5 +1,65 @@
+# Python
 *.pyc
-*.DS_Store
-*.png
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+checkpoints/
+vis/
+vis2/
+paperFigures/
+scripts/checkpoints/
 *.pt
+*.pth
+*.ckpt
 *.zip
+*.tar.gz
+*.h5
+*.npy
+*.npz
+
+# Large data files
+data/*.h5
+data/*.npy
+data/*.npz
+data/*.pt
+data/*.pth
+data/*.ckpt
+data/Backup/
+
+# Image files
+*.png
+*.jpg
+
+# But keep specific images
+!docs/images/logo.png
+!docs/images/architecture.jpg
+
+# txt files
+*.txt
+*.log
+*.csv
+
+# Archive and reference code
+Archive/
+xBD_code/
