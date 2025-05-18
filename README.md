@@ -77,7 +77,7 @@ Key parameters in the training script:
 
 ### Evaluation
 
-The pre-trained models are available at: [Pre-trained model](https://drive.google.com/file/d/1v6kVhOMu-6IfjLEXBOfmOn2eK9UEAt7U/view?usp=sharing)
+The pre-trained models are available at: [Pre-trained model](https://zenodo.org/records/15454349)
 
 To evaluate the model and make predictions, make sure you have the pre-trained model in the `checkpoints/your_project_name` folder, have the test images in the `data/damagecat/test/` folder, and the use the script in `scripts/eval.sh`:
 
@@ -101,7 +101,7 @@ The framework uses a transformer-based architecture (newUNetTrans) that combines
 
 ## BD-TypoSAT
 
-The data set used in this work is available at: [BD-TypoSAT](https://drive.google.com/file/d/1iGsJFyn-KURWgSGbaNOEAhinDluoyFlc/view?usp=sharing)
+The data set used in this work is available at: [BD-TypoSAT](https://zenodo.org/records/15453772)
 
 ## Citation
 
@@ -116,6 +116,20 @@ If you use this code in your research, please cite our paper:
       archivePrefix={arXiv},
       primaryClass={cs.CV},
       url={https://arxiv.org/abs/2504.11637}, 
+}
+```
+
+If you use the BD-TypoSAT data set, please cite the dataset:
+
+```bibtex
+@misc{xiao_2025_15453772,
+  author       = {Xiao, Yiming and Mostafavi, Ali},
+  title        = {BD-TypoSAT: Building Damage Typology Satellite Dataset},
+  month        = may,
+  year         = 2025,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.15453772},
+  url          = {https://doi.org/10.5281/zenodo.15453772},
 }
 ```
 
