@@ -11,49 +11,61 @@ def get_image_ids(image_dir):
     return [img.split("_")[1].split(".")[0] for img in pre_images]
 
 
-def move_files(image_id, train_dir, test_dir):
-    # Define file paths
-    pre_train = os.path.join(train_dir, "images", f"pre_{image_id}.png")
-    post_train = os.path.join(train_dir, "images", f"post_{image_id}.png")
-    mask_train = os.path.join(train_dir, "masks", f"pre_{image_id}.png")
+def copy_files(image_id, source_dir, dest_dir):
+    # Define source file paths
+    pre_source = os.path.join(source_dir, "images", f"pre_{image_id}.png")
+    post_source = os.path.join(source_dir, "images", f"post_{image_id}.png")
+    mask_source = os.path.join(source_dir, "masks", f"post_{image_id}.png")
 
-    pre_test = os.path.join(test_dir, "images", f"pre_{image_id}.png")
-    post_test = os.path.join(test_dir, "images", f"post_{image_id}.png")
-    mask_test = os.path.join(test_dir, "masks", f"pre_{image_id}.png")
+    # Define destination file paths
+    pre_dest = os.path.join(dest_dir, "images", f"pre_{image_id}.png")
+    post_dest = os.path.join(dest_dir, "images", f"post_{image_id}.png")
+    mask_dest = os.path.join(dest_dir, "masks", f"post_{image_id}.png")
 
-    # Create test directories if they don't exist
-    os.makedirs(os.path.dirname(pre_test), exist_ok=True)
-    os.makedirs(os.path.dirname(mask_test), exist_ok=True)
+    # Create destination directories if they don't exist
+    os.makedirs(os.path.dirname(pre_dest), exist_ok=True)
+    os.makedirs(os.path.dirname(mask_dest), exist_ok=True)
 
-    # Move files
-    shutil.move(pre_train, pre_test)
-    shutil.move(post_train, post_test)
-    shutil.move(mask_train, mask_test)
+    # Copy files
+    shutil.copy2(pre_source, pre_dest)
+    shutil.copy2(post_source, post_dest)
+    shutil.copy2(mask_source, mask_dest)
 
 
 def main():
     # Define paths
-    base_dir = Path("damagecat")
-    train_dir = base_dir / "train"
-    test_dir = base_dir / "test"
+    source_dir = Path("BD_TypoSAT")
+    dest_base_dir = Path("damagecat")
+    train_dest_dir = dest_base_dir / "train"
+    test_dest_dir = dest_base_dir / "test"
 
-    # Get all image IDs
-    image_ids = get_image_ids(train_dir / "images")
+    # Create destination directories
+    train_dest_dir.mkdir(parents=True, exist_ok=True)
+    test_dest_dir.mkdir(parents=True, exist_ok=True)
 
-    # Calculate number of images to move (1/10 of total)
-    num_test = len(image_ids) // 10
+    # Get all image IDs from source directory
+    image_ids = get_image_ids(source_dir / "images")
+    total_images = len(image_ids)
+
+    # Calculate number of images for test set (1/10 of total)
+    num_test = total_images // 10
 
     # Randomly select images for test set
-    random.seed(42)  # For reproducibility
-    test_ids = random.sample(image_ids, num_test)
+    random.seed(2026)  # For reproducibility
+    test_ids = set(random.sample(image_ids, num_test))
+    train_ids = set(image_ids) - test_ids
 
-    print(f"Moving {num_test} images to test set...")
+    print(f"Copying {len(train_ids)} images to train set...")
+    for image_id in train_ids:
+        copy_files(image_id, source_dir, train_dest_dir)
 
-    # Move selected images to test set
+    print(f"Copying {len(test_ids)} images to test set...")
     for image_id in test_ids:
-        move_files(image_id, train_dir, test_dir)
+        copy_files(image_id, source_dir, test_dest_dir)
 
     print("Done! Dataset split complete.")
+    print(f"Train set: {len(train_ids)} images")
+    print(f"Test set: {len(test_ids)} images")
 
 
 if __name__ == "__main__":

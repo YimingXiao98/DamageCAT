@@ -93,12 +93,6 @@ class CDEvaluator:
             raise FileNotFoundError("no such checkpoint %s" % checkpoint_name)
 
     def _visualize_pred(self):
-        # print(f"Shape of G_pred: {self.G_pred.shape}")
-        pred = torch.argmax(self.G_pred, dim=1, keepdim=True)
-        pred_vis = pred * 255
-        return pred_vis
-
-    def _visualize_pred(self):
         """
         Convert the prediction tensor into a grid visualization where each class is represented by a unique color.
         """
@@ -130,40 +124,6 @@ class CDEvaluator:
         )  # Use permute to make it [B, C, H, W]
         return grid_vis  # Combined grid visualization
 
-    """def _visualize_pred(self):
-        # print(f"Shape of G_pred: {self.G_pred.shape}")
-        pred = torch.argmax(self.G_pred, dim=1, keepdim=False)  # Remove keepdim
-
-        # Move tensor to CPU and convert to numpy array
-        pred_np = pred.cpu().numpy()  # Shape: [batch_size, H, W]
-
-        # Create a colormap for the n_class classes
-        cmap = plt.get_cmap("viridis", self.n_class)  # Discrete colors
-
-        # Prepare an empty list to store colored predictions
-        pred_vis_list = []
-
-        # Apply colormap to each image in the batch
-        for i in range(pred_np.shape[0]):  # Iterate over batch_size
-            pred_img = pred_np[i]  # Shape: [H, W]
-            # Normalize to [0, 1] for colormap
-            pred_img_normalized = pred_img / (self.n_class - 1)
-            # Apply colormap
-            pred_vis_img = cmap(pred_img_normalized)[:, :, :3]  # Shape: [H, W, 3]
-            # Scale to [0, 255] and convert to uint8
-            pred_vis_img = (pred_vis_img * 255).astype(np.uint8)
-            pred_vis_list.append(pred_vis_img)
-
-        # Convert list to numpy array
-        pred_vis_np = np.stack(pred_vis_list)  # Shape: [batch_size, H, W, 3]
-
-        # Convert the numpy array back to a tensor and permute dimensions
-        pred_vis = (
-            torch.from_numpy(pred_vis_np).permute(0, 3, 1, 2).float()
-        )  # Shape: [batch_size, 3, H, W]
-
-        return pred_vis"""
-
     def _update_metric(self):
         """
         update metric
@@ -176,36 +136,6 @@ class CDEvaluator:
             pr=G_pred.cpu().numpy(), gt=target.cpu().numpy()
         )
         return current_score
-
-    """def _collect_running_batch_states(self):
-
-        running_acc = self._update_metric()
-
-        m = len(self.dataloader)
-
-        if np.mod(self.batch_id, 100) == 1:
-            message = "Is_training: %s. [%d,%d],  running_mf1: %.5f\n" % (
-                self.is_training,
-                self.batch_id,
-                m,
-                running_acc,
-            )
-            self.logger.write(message)
-
-        # if np.mod(self.batch_id, 1) == 1:
-        vis_input = utils.make_numpy_grid(de_norm(self.batch["A"]))
-        vis_input2 = utils.make_numpy_grid(de_norm(self.batch["B"]))
-
-        vis_pred = self._visualize_pred().detach().cpu().numpy()
-        # thresh = threshold_otsu(vis_pred)
-        # vis_pred = vis_pred > thresh
-        vis_pred = utils.make_numpy_grid(torch.tensor(vis_pred))
-
-        vis_gt = utils.make_numpy_grid(self.batch["L"])
-        vis = np.concatenate([vis_input, vis_input2, vis_pred, vis_gt], axis=0)
-        vis = np.clip(vis, a_min=0.0, a_max=1.0)
-        file_name = os.path.join(self.vis_dir, "eval_" + str(self.batch_id) + ".jpg")
-        plt.imsave(file_name, vis)"""
 
     def _visualize_gt(self, tensor_data):
         """

@@ -29,7 +29,7 @@ def main():
     parser.add_argument("--dataset", default="DamageCATDataset", type=str)
     parser.add_argument("--data_name", default="DamageCATDataset", type=str)
 
-    parser.add_argument("--batch_size", default=1, type=int)
+    parser.add_argument("--batch_size", default=8, type=int)
     parser.add_argument("--split", default="test", type=str)
 
     parser.add_argument("--img_size", default=512, type=int)
@@ -56,19 +56,18 @@ def main():
     args.vis_dir = os.path.join("vis", args.project_name)
     os.makedirs(args.vis_dir, exist_ok=True)
 
-    for i in range(4):
-        dataloader = utils.get_loader(
-            args.data_name,
-            img_size=args.img_size,
-            batch_size=args.batch_size,
-            is_train=False,
-            split="test",
-            dataset=args.dataset,
-            patch=i,
-        )
-        model = CDEvaluator(args=args, dataloader=dataloader)
+    dataloader = utils.get_loader(
+        args.data_name,
+        img_size=args.img_size,
+        batch_size=args.batch_size,
+        is_train=False,
+        split="test",
+        dataset=args.dataset,
+        patch=None,
+    )
+    model = CDEvaluator(args=args, dataloader=dataloader)
 
-        model.eval_models(checkpoint_name=args.checkpoint_name)
+    model.eval_models(checkpoint_name=args.checkpoint_name)
 
 
 if __name__ == "__main__":

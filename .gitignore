@@ -70,3 +70,10 @@ data/damagecat/train/masks/*
 data/damagecat/test/images/*
 data/damagecat/test/masks/*
 !data/damagecat/test/*.png
+
+# util files
+data/check_masks.py
+data/copy_masks.py
+data/split_train_test.py
+data/BD_TypoSAT/
+data/split_train_test.py
