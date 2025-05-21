@@ -5,7 +5,7 @@ data_name=DamageCATDataset
 net_G=newUNetTrans
 split=test
 n_class=5
-project_name=CROP_newUNetTrans_DamageCATDataset_b8_lr0.001_train_val_200_linear_ce_smoothen
+project_name=CROP_newUNetTrans_DamageCAT_b8_lr0.001_train_val_300_linear_ce_dice_smoothen_seed43
 checkpoint_name=best_ckpt.pt
 
 

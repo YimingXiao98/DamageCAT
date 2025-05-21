@@ -26,16 +26,16 @@ def main():
 
     # data
     parser.add_argument("--num_workers", default=4, type=int)
-    parser.add_argument("--dataset", default="DamageCAT", type=str)
-    parser.add_argument("--data_name", default="x", type=str)
+    parser.add_argument("--dataset", default="DamageCATDataset", type=str)
+    parser.add_argument("--data_name", default="DamageCATDataset", type=str)
 
-    parser.add_argument("--batch_size", default=8, type=int)
+    parser.add_argument("--batch_size", default=1, type=int)
     parser.add_argument("--split", default="test", type=str)
 
-    parser.add_argument("--img_size", default=256, type=int)
+    parser.add_argument("--img_size", default=512, type=int)
 
     # model
-    parser.add_argument("--n_class", default=2, type=int)
+    parser.add_argument("--n_class", default=5, type=int)
     parser.add_argument(
         "--net_G",
         default="base_transformer_pos_s4_dd8_dedim8",

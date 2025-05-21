@@ -217,18 +217,26 @@ class xBDataset(data.Dataset):
         fn = self.img_name_list[index]
 
         img = cv2.imread(fn, cv2.IMREAD_COLOR)
-        img_B_path = fn.replace("pre", "post")
-        img_B = cv2.imread(img_B_path, cv2.IMREAD_COLOR)
-        label_path = fn.replace("images", "masks").replace("pre", "post")
-        label = cv2.imread(
-            label_path,
-            cv2.IMREAD_UNCHANGED,
-        )
-        """label[label <= 2] = 0
-        label[label > 2] = 1"""
+        img_B = cv2.imread(fn.replace("pre", "post"), cv2.IMREAD_COLOR)
+
+        # For test split, make masks optional
+        if self.split == "test":
+            mask_path = fn.replace("images", "masks").replace("pre", "post")
+            if os.path.exists(mask_path):
+                label = cv2.imread(mask_path, cv2.IMREAD_UNCHANGED)
+            else:
+                # Create a dummy mask if it doesn't exist
+                label = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
+        else:
+            label = cv2.imread(
+                fn.replace("images", "masks").replace("pre", "post"),
+                cv2.IMREAD_UNCHANGED,
+            )
+
         [img, img_B], [label] = self.augm.transform(
             [img, img_B], [label], to_tensor=self.to_tensor
         )
+
         name = fn.split("/")[-1]
         return {"name": fn, "A": img, "B": img_B, "L": label}
 
@@ -246,10 +254,12 @@ class DamageCATDataset(data.Dataset):
         is_train=True,
         label_transform=None,
         to_tensor=True,
+        random_seed=42,
     ):
         super(DamageCATDataset, self).__init__()
 
         self.root_dir = root_dir
+        print(f"Root dir: {self.root_dir}")
         self.img_size = img_size
         self.split = split  # train | train_aug | val
 
@@ -268,59 +278,70 @@ class DamageCATDataset(data.Dataset):
         self.label_transform = label_transform
         self.split = split
 
-        train_dirs = [os.path.abspath("data/damagecat/train")]
+        # Use test directory for test split, train directory for training
+        if split == "test":
+            train_dirs = [os.path.abspath("data/damagecat/test")]
+        else:
+            train_dirs = [os.path.abspath("data/damagecat/train")]
+
         all_files = []
         for d in train_dirs:
             for f in sorted(os.listdir(os.path.join(d, "images"))):
-                """and (
-                    ("hurricane-harvey" in f)
-                    | ("hurricane-michael" in f)
-                    | ("mexico-earthquake" in f)
-                    | ("tuscaloosa-tornado" in f)
-                    | ("palu-tsunami" in f)
-                )"""
                 if "pre" in f:
                     all_files.append(os.path.join(d, "images", f))
 
-        # Upsampling
-        file_classes = []
-        for fn in all_files:
-            fl = np.zeros((4,), dtype=bool)
-            msk1 = cv2.imread(
-                fn.replace("images", "masks").replace("pre", "post"),
-                cv2.IMREAD_UNCHANGED,
-            )
-            for c in range(1, 5):
-                fl[c - 1] = c in msk1
-            file_classes.append(fl)
-        file_classes = np.asarray(file_classes)
-        for i in range(len(file_classes)):
-            im = all_files[i]
-            if file_classes[i, 1:].max():
-                all_files.append(im)
-            if file_classes[i, 2:4].max():
-                all_files.append(im)
+        # Only do train/val split if we're not in test mode
+        if split != "test":
+            # Upsampling
+            file_classes = []
+            for fn in all_files:
+                fl = np.zeros((4,), dtype=bool)
+                msk1 = cv2.imread(
+                    fn.replace("images", "masks").replace("pre", "post"),
+                    cv2.IMREAD_UNCHANGED,
+                )
+                for c in range(1, 5):
+                    fl[c - 1] = c in msk1
+                file_classes.append(fl)
+            file_classes = np.asarray(file_classes)
+            for i in range(len(file_classes)):
+                im = all_files[i]
+                if file_classes[i, 1:].max():
+                    all_files.append(im)
+                if file_classes[i, 2:4].max():
+                    all_files.append(im)
 
-        # train test split
-        train_idxs, val_idxs = train_test_split(
-            np.arange(len(all_files)), test_size=0.1, random_state=10
-        )
-        if split == "train":
-            self.img_name_list = np.array(all_files)[train_idxs]
-        elif split == "val":
-            self.img_name_list = np.array(all_files)[val_idxs]
-        elif split == "test":
-            self.img_name_list = np.array(all_files)[val_idxs]
+            # train test split
+            train_idxs, val_idxs = train_test_split(
+                np.arange(len(all_files)), test_size=0.1, random_state=random_seed
+            )
+            if split == "train":
+                self.img_name_list = np.array(all_files)[train_idxs]
+            elif split == "val":
+                self.img_name_list = np.array(all_files)[val_idxs]
+        else:
+            # For test split, use all files from test directory
+            self.img_name_list = np.array(all_files)
 
     def __getitem__(self, index):
         fn = self.img_name_list[index]
 
         img = cv2.imread(fn, cv2.IMREAD_COLOR)
         img_B = cv2.imread(fn.replace("pre", "post"), cv2.IMREAD_COLOR)
-        label = cv2.imread(
-            fn.replace("images", "masks").replace("pre", "post"),
-            cv2.IMREAD_UNCHANGED,
-        )
+
+        # For test split, make masks optional
+        if self.split == "test":
+            mask_path = fn.replace("images", "masks").replace("pre", "post")
+            if os.path.exists(mask_path):
+                label = cv2.imread(mask_path, cv2.IMREAD_UNCHANGED)
+            else:
+                # Create a dummy mask if it doesn't exist
+                label = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint8)
+        else:
+            label = cv2.imread(
+                fn.replace("images", "masks").replace("pre", "post"),
+                cv2.IMREAD_UNCHANGED,
+            )
 
         [img, img_B], [label] = self.augm.transform(
             [img, img_B], [label], to_tensor=self.to_tensor

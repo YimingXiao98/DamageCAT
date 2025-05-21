@@ -16,6 +16,7 @@ def get_loader(
     is_train=False,
     dataset="DamageCATDataset",
     patch=None,
+    random_seed=42,
 ):
     dataConfig = data_config.DataConfig().get_data_config(data_name)
     root_dir = dataConfig.root_dir
@@ -30,6 +31,7 @@ def get_loader(
             is_train=is_train,
             label_transform=label_transform,
             patch=patch,
+            random_seed=random_seed,
         )
     elif dataset == "xBDataset":
         data_set = xBDataset(
@@ -38,6 +40,7 @@ def get_loader(
             img_size=img_size,
             is_train=is_train,
             label_transform=label_transform,
+            random_seed=random_seed,
         )
     elif dataset == "DamageCATDataset":
         data_set = DamageCATDataset(
@@ -46,6 +49,7 @@ def get_loader(
             img_size=img_size,
             is_train=is_train,
             label_transform=label_transform,
+            random_seed=random_seed,
         )
     else:
         raise NotImplementedError(
@@ -77,6 +81,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=True,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
         val_set = CDDataset(
             root_dir=root_dir,
@@ -84,6 +89,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=False,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
     elif args.dataset == "xBDataset":
         training_set = xBDataset(
@@ -92,6 +98,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=True,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
         val_set = xBDataset(
             root_dir=root_dir,
@@ -99,6 +106,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=False,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
     elif args.dataset == "DamageCATDataset":
         training_set = DamageCATDataset(
@@ -107,6 +115,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=True,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
         val_set = DamageCATDataset(
             root_dir=root_dir,
@@ -114,6 +123,7 @@ def get_loaders(args):
             img_size=args.img_size,
             is_train=False,
             label_transform=label_transform,
+            random_seed=args.random_seed,
         )
     else:
         raise NotImplementedError(

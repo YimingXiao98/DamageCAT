@@ -47,6 +47,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--project_name", default="test", type=str)
     parser.add_argument("--checkpoint_root", default="checkpoints", type=str)
+    parser.add_argument("--random_seed", default=42, type=int)
 
     # data
     parser.add_argument("--num_workers", default=4, type=int)
@@ -77,7 +78,6 @@ if __name__ == "__main__":
     parser.add_argument("--max_epochs", default=100, type=int)
     parser.add_argument("--lr_policy", default="linear", type=str, help="linear | step")
     parser.add_argument("--lr_decay_iters", default=100, type=int)
-
     args = parser.parse_args()
     utils.get_device(args)
     print(args.gpu_ids)
