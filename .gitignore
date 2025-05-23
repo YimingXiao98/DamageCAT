@@ -60,6 +60,9 @@ data/Backup/
 *.log
 *.csv
 
+# keep the requirements.txt
+!requirements.txt
+
 # Archive and reference code
 Archive/
 xBD_code/
